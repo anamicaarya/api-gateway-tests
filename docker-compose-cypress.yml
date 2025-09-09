@@ -15,6 +15,7 @@ services:
       npx cypress run --spec $${FOLDER}'
     volumes:
       - ./:/e2e
+      - node_modules:/e2e/node_modules
       - ./cypress/reports:/e2e/cypress/reports
     ipc: host
 
