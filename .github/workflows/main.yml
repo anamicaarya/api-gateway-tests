@@ -2,7 +2,7 @@ name: Api Gateway tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test_gha ]
 
 jobs:
   cypress:
