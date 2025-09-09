@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  apigateway:
+    networks:
+      - shared
+    build: 
+     context: .
+     dockerfile: Dockerfile
+    env_file:
+      - kong-manager.env
+      - spec-folder.env
+    environment:
+      CYPRESS_RECORD_KEY: ${CYPRESS_RECORD_KEY}
+    command: sh -c '
+      npx cypress run --spec $${FOLDER}'
+    volumes:
+      - ./:/e2e
+      - ./cypress/reports:/e2e/cypress/reports
+    ipc: host
+
+networks:
+  shared:
+    external: true
+    name: api-gateway-tests_kong-ee-net

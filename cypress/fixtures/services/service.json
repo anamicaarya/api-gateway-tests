@@ -1,0 +1,45 @@
+{
+	"workspace": "default",
+	"route_error": "no Route matched with those values",
+	"services": [
+		{
+			"name": "example_service",
+			"entity": "gateway-service",
+			"entity_text": "New gateway service",
+			"url": "https://httpbin.konghq.com",
+			"protocol": "https",
+			"host": "httpbin.konghq.com",
+			"post": 443,
+			"route": {
+				"config_type": "basic",
+				"name": "example_route",
+				"path": "/mock",
+				"methods": [
+					"GET",
+					"POST",
+					"PUT",
+					"DELETE"
+				]
+			},
+			"plugin":{
+				"name": "key-auth",
+				"type": "key-auth-card",
+				"route": "example_route",
+				"scoped": true
+			}
+
+		},
+		{
+			"name": "example_service1",
+			"url": "https://httpbin.konghq.com"
+		}
+	],
+    "consumer": {
+    	"username": "K2G",
+    	"custom_id": 1,
+    	"credentials": {
+    		"key": "kongsecret"
+    	}
+
+    }	
+}

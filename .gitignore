@@ -1,0 +1,8 @@
+# Dependency directories
+node_modules/
+
+# generated reports
+cypress/reports
+
+#others
+.DS_Store
