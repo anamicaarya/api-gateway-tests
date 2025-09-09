@@ -1,0 +1,59 @@
+name: Api Gateway tests
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  cypress:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+    # tests on Chrome browser
+    name: Gateway 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Ensure docker && docker-compose is installed
+        run: |
+          docker version && docker compose version
+
+      - name: Start Kong Manager
+        run: docker compose up -d
+
+      - name: Wait for Kong Manager on localhost:8002
+        run: |
+          for i in {1..20}; do
+            if curl -fsS http://localhost:8002/ >/dev/null; then
+              echo "Kong Manager is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Kong Manager connecting error"
+          exit 1
+
+      - name: Build set up
+        run: |
+          docker compose -f docker-compose-cypress.yml build
+
+      - name: Run tests
+        run: |
+          docker compose -f docker-compose-cypress.yml up
+
+      - name: cypress report
+        uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: report
+          path: /e2e/cypress/reports/
+
+      - name: Tear down containers
+        if: always()
+        run: |
+          docker compose -f docker-compose-cypress.yml down -v || true
+          docker compose down -v || true
