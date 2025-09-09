@@ -2,7 +2,13 @@ name: Api Gateway tests
 
 on:
   push:
-    branches: [ test_gha ]
+    branches: 
+      - test_gha
+      - feature/**
+      - main
+  pull_request:
+    branches:
+      - main  # Triggers on pushes to the main branch
   workflow_dispatch:
     inputs:
       clean_build:
@@ -30,7 +36,7 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
+
       - name: Build Cypress image
         uses: docker/build-push-action@v5
         with:

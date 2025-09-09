@@ -5,6 +5,8 @@ module.exports = defineConfig({
     konnect_proxy_url: 'http://localhost:8000',
     konnect_admin_url: 'http://localhost:8001',
   },
+  // record only when the key is present
+  record: !!process.env.CYPRESS_RECORD_KEY,
   e2e: {
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on)

@@ -13,11 +13,7 @@ services:
     environment:
       CYPRESS_RECORD_KEY: ${CYPRESS_RECORD_KEY}
     command: sh -c '
-      ARGS="";
-      if [ -n "$CYPRESS_RECORD_KEY" ]; then
-        ARGS="--record --key \"$CYPRESS_RECORD_KEY\"";
-      fi;
-      npx cypress run $ARGS --spec "$${FOLDER}"'
+      npx cypress run --spec "$${FOLDER}"'
     volumes:
       - ./:/e2e
       - node_modules:/e2e/node_modules
