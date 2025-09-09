@@ -19,6 +19,9 @@ services:
       - ./cypress/reports:/e2e/cypress/reports
     ipc: host
 
+volumes:
+  node_modules: {}
+
 networks:
   shared:
     external: true
