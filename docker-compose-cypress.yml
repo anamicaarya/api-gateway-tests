@@ -12,12 +12,17 @@ services:
       - spec-folder.env
     environment:
       CYPRESS_RECORD_KEY: ${CYPRESS_RECORD_KEY}
-    command: sh -c '
-      ARGS="";
-      if [ -n "$CYPRESS_RECORD_KEY" ]; then
-        ARGS="--record --key \"$CYPRESS_RECORD_KEY\"";
-      fi;
-      npx cypress run $ARGS --spec "$${FOLDER}"'
+    command: 
+      - sh
+      - -lc
+      - |
+        if [ -n "$CYPRESS_RECORD_KEY" ]; then
+          echo "Recording to Cypress Cloud"
+          exec npx cypress run --record --key "$CYPRESS_RECORD_KEY" --spec "$${FOLDER}"
+        else
+          echo "Local run (no CYPRESS_RECORD_KEY)"
+          exec npx cypress run --spec "$${FOLDER}"
+        fi
     volumes:
       - ./:/e2e
       - node_modules:/e2e/node_modules

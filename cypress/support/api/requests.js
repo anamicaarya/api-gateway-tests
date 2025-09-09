@@ -5,6 +5,5 @@ Cypress.Commands.add('send_request', (p_url, opts = {}) => {
       body:  opts.method ? opts.body : null,
       failOnStatusCode: opts.failOnStatusCode ? opts.failOnStatusCode : true
   }
-  cy.log(params)
   cy.request(params)
 })

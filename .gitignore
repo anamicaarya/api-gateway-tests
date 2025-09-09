@@ -4,6 +4,7 @@ node_modules/
 # generated reports
 cypress/reports
 cypress/videos
+cypress/screenshots
 
 #others
 .DS_Store

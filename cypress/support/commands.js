@@ -64,7 +64,7 @@ Cypress.Commands.add('access_navigation_items', (item) => {
 
 // the buttons data-testid for entities/resources are different when created first time than others 
 Cypress.Commands.add('use_right_entity_button', (entity, entity_text) => {
-  cy.wait(1000)
+  cy.wait(1000)  // strategic wait to ensure resource form loads fine
   cy.get('body').then((body) => {
     if (body.find('[data-testid="empty-state-action"]').length > 0) {
       cy.get('[data-testid="empty-state-action"]')
