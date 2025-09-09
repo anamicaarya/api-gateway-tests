@@ -25,6 +25,7 @@ module.exports = defineConfig({
     experimentalCspAllowList: ["default-src","script-src"],
     viewportWidth: 1320,
     viewportHeight: 720,
+    projectId: '98phxm',
     reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
       charts: true,
