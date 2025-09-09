@@ -49,8 +49,8 @@ jobs:
         uses: actions/upload-artifact@master
         if: always()
         with:
-          name: report
-          path: /e2e/cypress/reports/
+          name: cypress-reports
+          path: cypress/reports/**
 
       - name: Tear down containers
         if: always()
