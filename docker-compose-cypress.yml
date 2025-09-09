@@ -3,6 +3,7 @@ services:
   apigateway:
     networks:
       - shared
+    image: apigateway-tests:ci
     build: 
      context: .
      dockerfile: Dockerfile
@@ -12,7 +13,11 @@ services:
     environment:
       CYPRESS_RECORD_KEY: ${CYPRESS_RECORD_KEY}
     command: sh -c '
-      npx cypress run --record --spec $${FOLDER}'
+      ARGS="";
+      if [ -n "$CYPRESS_RECORD_KEY" ]; then
+        ARGS="--record --key \"$CYPRESS_RECORD_KEY\"";
+      fi;
+      npx cypress run $ARGS --spec "$${FOLDER}"'
     volumes:
       - ./:/e2e
       - node_modules:/e2e/node_modules

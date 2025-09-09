@@ -3,6 +3,7 @@ node_modules/
 
 # generated reports
 cypress/reports
+cypress/videos
 
 #others
 .DS_Store
