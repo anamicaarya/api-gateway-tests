@@ -1,25 +1,25 @@
-Cypress.Commands.add('add_plugin_ui', (service) => {
-  if(service.plugin){
-    cy.use_right_entity_button(service.plugin.entity??'plugin', service.plugin.entity_text??'New plugin')
-    
-    cy.get(`[data-testid="${service.plugin.type}"]`).click()
+import { sel } from "../selectors";
+Cypress.Commands.add('uiCreatePlugin', (plugin) => {
+  if(plugin){
+    cy.getNewPluginButton();
+    cy.get(sel.plugins.selectPluginType(plugin.plugin_card)).click();
 
-    if(service.plugin.scoped){
-      cy.get('label.k-label.Scoped-check>input')
+    if(plugin.scoped){
+      cy.get(sel.pluginForm.scopedRadio)
         .should('be.disabled')
         .should('have.value', 1)
     }
 
-    cy.get('input[id="service-id"]')
+    cy.get(sel.pluginForm.serviceName)
       .should('be.disabled')
 
-    cy.get('input[id="route-id"]')  
-      .type(service.plugin.route)
+    cy.get(sel.pluginForm.routeName)
+      .type(plugin.route)
 
-    cy.get('div.select-item-container')
-      .contains(service.plugin.route)
+    cy.get(sel.pluginForm.routeNamesContainer)
+      .contains(plugin.route)
       .click()
 
-    cy.create_resource_and_verify_success_message('plugin', `Plugin "${service.plugin.name}" successfully created!`)
+    cy.genericInterceptRequest('plugin', 'create', sel.pluginForm.save, `Plugin "${plugin.name}" successfully created!`);
   }
 })

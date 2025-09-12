@@ -2,8 +2,8 @@ const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   env: {
-    konnect_proxy_url: 'http://localhost:8000',
-    konnect_admin_url: 'http://localhost:8001',
+    kong_proxy_url: 'http://localhost:8000',
+    kong_admin_url: 'http://localhost:8001',
     default_workspace: 'default',
   },
   // record only when the key is present

@@ -1,31 +1,61 @@
-Cypress.Commands.add('add_route_ui', (service) => {
-  if(service.route){
-    cy.get('button.k-button')
-      .contains('Add a Route')
-      .should('exist')
-      .click()
-
-    if(service.route.config_type === 'advanced'){
-      // implement later
+import { sel } from "../selectors";
+Cypress.Commands.add('uiCreateRoute', (route) => {
+  if(route){
+    cy.getNewRouteButton();
+    if(route.name){
+      cy.clearAndType(sel.routeForm.name, route.name);
     }
-    else{
-      cy.get('[data-testid="route-form-name"]')
-        .type(service.route.name)
-        .should('have.value', service.route.name)
+    cy.extractCommonRouteForm(route);
+    cy.genericInterceptRequest('route', 'create', sel.routeForm.save, `Route "${route.name}" successfully created!`);
+  }
+})
 
-      cy.get('[data-testid="route-form-paths-input-1"]')
-        .type(service.route.path)
-        .should('have.value', service.route.path)
+Cypress.Commands.add('uiEditRoute', (route_name, options = {}) => {
+  if(route_name){
+    cy.get(sel.routes.selectRouteRow(route_name)).find(sel.routes.actionsButton).click();
+    cy.get(sel.routes.editButton)
+      .filter(':visible')
+      .eq(0)
+      .scrollIntoView()
+      .click();
 
-      if(service.route.methods){
-        const multiselect_list = '[data-testid="multiselect-trigger"]'
-        cy.get(multiselect_list).click()
-        cy.wrap(service.route.methods).each((method, index) => {
-          cy.get(`[data-testid="multiselect-item-${method}"]`).click()
-        })
-        cy.get('body').click(0, 0)
-      }
+    if(options.name != null){
+      cy.clearAndType(sel.routeForm.edit_name, options.name);
     }
-    cy.create_resource_and_verify_success_message('route', `Route "${service.route.name}" successfully created!`)
+
+    cy.extractCommonRouteForm(options, false);
+    cy.genericInterceptRequest('route', 'update', sel.routeForm.editSave, `Route "${route_name}" successfully updated!`);
+  }
+})
+
+Cypress.Commands.add('extractCommonRouteForm', (options, create = true) => {
+  if(options.path){
+    cy.clearAndType(sel.routeForm.path, options.path);
+  }
+
+  if(options.host){
+    cy.clearAndType(sel.routeForm.host, options.host);
+  }
+
+  if(options.methods){
+    const multiselect_list = sel.routeForm.multiSelectTrigger;
+    if(!create){
+      cy.get(sel.routeForm.multiSelectItemdropDown).click();
+      cy.get(sel.routeForm.multiSelectItemClear).click();
+    }
+    cy.get(multiselect_list).click();
+    cy.wrap(options.methods).each((method) => {
+      cy.get(sel.routeForm.multiSelectItem(method)).click();
+    })
+
+    cy.get('body').click(0, 0);
+    cy.get(sel.routeForm.multiSelectItems)
+      .then((methods) => {
+        cy.log(methods)
+      })
+  }
+
+  if(options?.strip_path !== undefined){
+    cy.setCheckbox(sel.routeForm.stripPath, options.strip_path);
   }
 })

@@ -1,0 +1,88 @@
+{
+	"workspace": "default",
+	"route_error": "no Route matched with those values",
+	"service": {
+		"name": "service-key-auth",
+		"url": "https://jsonplaceholder.typicode.com",
+		"route": 
+			{
+				"name": "route-with-host",
+				"path": "/v1",
+				"resource": "/v1/todos/1",
+				"host": "api.local",
+				"strip_path": true,
+				"test": 
+				{
+					"host_option": "api.local",
+					"options": {
+						"method": "GET",
+						"limit": 5,
+						"headers": {
+							"Host": "api.local"
+						},
+						"failOnStatusCode": false,
+						"expected_code": 401,
+						"allowed_status_codes": [200, 401, 404]
+					},
+					"response": {
+						"status_code": 401,
+						"message": "No API key found in request"
+					}
+
+				},
+				"test_with_apikey": 
+				{
+					"host_option": "api.local",
+					"options": {
+						"method": "GET",
+						"limit": 5,
+						"headers": {
+							"Host": "api.local",
+							"apikey": "kongsecret"
+						},
+						"failOnStatusCode": false,
+						"allowed_status_codes": [200, 401, 404]
+					},
+					"response": {
+						"status_code": 200,
+						"headers": ["X-Kong-Request-Id", "X-Kong-Upstream-Latency", "X-Kong-Proxy-Latency"]
+					}
+
+				},
+				"test_with_wrong_apikey": 
+				{
+					"host_option": "api.local",
+					"options": {
+						"method": "GET",
+						"limit": 2,
+						"headers": {
+							"Host": "api.local",
+							"apikey": "****"
+						},
+						"failOnStatusCode": false,
+						"allowed_status_codes": [ 401]
+					},
+					"response": {
+						"status_code": 401,
+						"message": "Unauthorized"
+					}
+
+				}
+			},
+		"plugin":{
+			"name": "key-auth",
+			"plugin_card": "Key Authentication",
+			"type": "key-auth-card",
+			"route": "route-with-host",
+			"scoped": true
+		}
+	},
+    "consumer": {
+    	"username": "K2G",
+    	"custom_id": 1,
+    	"credentials": {
+    		"key": "kongsecret"
+    	}
+
+    }	
+}
