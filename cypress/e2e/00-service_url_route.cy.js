@@ -1,8 +1,9 @@
 const data = require('../fixtures/services/service_url.json')
+const workspace = data.workspace??Cypress.env('default_workspace1');
 
 describe("Kong Manager. Create Service then Route and verify via proxy", () => {
   before(() => {
-    cy.load_workspace(data.workspace);
+    cy.load_workspace(workspace);
   });
 
   after(() => {

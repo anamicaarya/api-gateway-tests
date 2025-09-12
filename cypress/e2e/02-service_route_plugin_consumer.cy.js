@@ -1,9 +1,10 @@
 const data = require('../fixtures/services/service_route_plugin_consumer.json');
+const workspace = data.workspace??Cypress.env('default_workspace1');
 const service = data.service;
 const route = data.service.route;
 describe("Kong Manager. Create Service->Route->Plugin->Consumer and verify via proxy", () => {
   before(() => {
-    cy.load_workspace(data.workspace);
+    cy.load_workspace(workspace);
   });
 
   after(() => {
