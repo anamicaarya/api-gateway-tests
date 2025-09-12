@@ -1,6 +1,6 @@
 # API Gateway Tests for Kong
 
-A practical Cypress test suite for validating a local Kong API Gateway instance. It mirrors your repository layout on the `feature/scope_v1` branch and is ready for both local runs and GitHub Actions.
+A practical Cypress test suite for validating a local Kong API Gateway instance. It mirrors the repository layout on the `main` branch and is ready for both local runs and GitHub Actions.
 
 > Audience. A QA or SDET reviewer who wants a clean setup, a minimal but representative set of tests, and clear reasoning behind the choices.
 
@@ -10,7 +10,7 @@ A practical Cypress test suite for validating a local Kong API Gateway instance.
 
 ### Prerequisites
 - Docker and Docker Compose
-- Node.js 18 or newer (only required if you run Cypress outside Docker)
+- Node.js 18 or newer (only required if want to run Cypress outside Docker)
 - Git
 
 ### Clone and start Kong
@@ -78,8 +78,8 @@ Artifacts are written under `cypress/reports`. Videos and screenshots are under 
 ## What the suite covers
 
 1. **Kong Manager flows**
-   - Create a Service through the UI.
-   - Create a Route associated with that Service.
+   - Create a Service through the UI. (both url and protocol based)
+   - Create a Route associated with that Service. (strip_path: true, false, with host)
    - Basic list and detail validation.
 2. **Proxy checks**
    - Verify that configured paths and methods respond.
@@ -87,14 +87,14 @@ Artifacts are written under `cypress/reports`. Videos and screenshots are under 
 3. **Plugin sanity example**
    - A focused example such as key-auth to illustrate enablement, expected denial without credentials, and success with the correct header.
 
-This is a compact but realistic slice that you can extend in small steps.
+This is a compact but this can extended in small steps.
 
 ---
 
 ## Configuration
 
 - `kong-manager.env` holds Kong UI related environment values.
-- `spec-folder.env` sets `FOLDER` when you want to narrow execution to a subset of specs.
+- `spec-folder.env` sets `FOLDER` when want to narrow execution to a subset of specs.
 - Common variables used by the suite:
   ```
   KONG_MANAGER_URL=http://localhost:8002
@@ -123,21 +123,21 @@ Prefer `data-testid` selectors. Use `cy.intercept` plus `cy.wait` on named alias
 **Trade off.** Adding test identifiers takes a little more effort but prevents long term breakage.
 
 ### 4. Minimal but meaningful plugin coverage
-Start with a single plugin example that shows the pattern clearly. Copy the pattern for rate limiting, JWT, or OIDC later.
+Start with a single plugin example(Key-auth) that shows the pattern clearly. Copy the pattern for rate limiting, JWT, or OIDC later.
 
 **Trade off.** Breadth is limited. Depth is clear, which keeps review time low and signals how to extend.
 
 ### 5. Build from Dockerfile only when control is needed
-The repository can run against official images or build from a Dockerfile. Building an image gives you control to add reporters and tools once, then keep runs consistent in local and CI.
+The repository can run against official images or build from a Dockerfile. Building an image gives us control to add reporters and tools once, then keep runs consistent in local and CI.
 
-**Trade off.** Building the image costs minutes. You gain predictable tooling and no ad hoc installs.
+**Trade off.** Building the image costs minutes. This helps in gaining predictable tooling and no adhoc installs.
 
 ---
 
 ## Assumptions
 
-- You are testing the Kong instance that the provided compose files boot on `localhost` ports.
-- The default workspace is used. If you use multiple workspaces, pass the name through `WORKSPACE`.
+- We are testing the Kong instance that the provided compose files boot on `localhost` ports.
+- The default workspace is used. If want to use multiple workspaces, pass the name through `WORKSPACE`.
 - External plugin dependencies are either reachable or disabled for the exercise.
 - The UI provides stable `data-testid` hooks for elements that tests interact with.
 
@@ -153,14 +153,12 @@ The repository can run against official images or build from a Dockerfile. Build
 
 ### Common issues
 
-- **Two matching elements on click.** Click only visible elements:
+- **Two matching elements on click.** Click only visible elements:(when there are more than on entity(services, routes etc) in the rows)
   ```js
   cy.get('[data-testid="action-entity-edit"]').filter(':visible').click()
   ```
 
 - **Cross origin script errors in Cypress.** Use the `crossorigin` attribute and ensure CORS headers, or serve the app under a single origin in test mode.
-
-- **Chrome DBus warnings in containers.** These are harmless in minimal containers. Add `--no-sandbox` if your environment requires it.
 
 - **Artifacts missing in CI.** Ensure reporter output paths match what the workflow uploads. Verify `cypress/reports` exists after the run.
 
@@ -169,8 +167,7 @@ The repository can run against official images or build from a Dockerfile. Build
 ## Trade offs summary
 
 - UI flows increase realism and cost time. Balance with API seeded smoke tests when speed matters.
-- Compose is slower than mocks. It buys you reproducibility and parity with CI.
-- Deterministic selectors take setup effort. They pay back by eliminating flaky tests.
+- Deterministic selectors(Page object model) take setup effort. They pay back by eliminating flaky tests.
 - Building a custom runner image takes minutes. It guarantees consistent tools and reporting.
 
 ---
