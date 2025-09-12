@@ -1,43 +1,66 @@
-Cypress.Commands.add('create_service_ui', (service) => {
-  cy.use_right_entity_button(service.entity??'gateway-service', service.entity_text??'New gateway service')
+import { sel } from "../selectors";
+Cypress.Commands.add('uiCreateService', (service) => {
+  cy.getNewServiceButton();
 
-  if(service.mode){
-    // implement advance mode later
+  if(service.name){
+    cy.clearAndType(sel.serviceForm.name, service.name);
+  }
+  if(service.mode != undefined){
+    cy.get(sel.services.manual).click();
+    if (service.protocol) {
+      cy.get(sel.serviceForm.protocol).click();
+      cy.get(`[data-testid="select-item-${service.protocol}"]`).click()
+    }
+
+    if(service.host) {
+      cy.clearAndType(sel.serviceForm.host, service.host);
+    }
+
+    if(service.port) {
+      cy.get(sel.serviceForm.port)
+        .clear().clear().type(service.port).should('have.value', service.port);
+    }
   }
   else{
-    cy.log('create service in default mode')
-    cy.get('[data-testid="gateway-service-url-input"]')
-      .clear()
-      .type(service.url)
-      .should('have.value', service.url)
-
-    cy.get('[data-testid="gateway-service-name-input"]')
-      .clear()
-      .type(service.name)
-      .should('have.value', service.name)
-
-    cy.service_intercept_request()
-      .then(({create}) => {
-        cy.get('[data-testid="service-create-form-submit"]')
-          .click()
-
-        cy.wait(create)
-          .then((interception) => {
-            cy.task('log', `create_service: ${JSON.stringify(interception)}`)
-            expect(interception.response.statusCode).to.be.oneOf([200, 201, 409])
-          })
-
-        cy.get('[data-testid="form-error"]').should('not.exist')
-        cy.notification_message(`Gateway Service "${service.name}" successfully created!`)
-    })
+    if(service.url){
+      cy.clearAndType(sel.serviceForm.url, service.url);
+    }
   }
+
+  if(service.name){
+    cy.clearAndType(sel.serviceForm.name, service.name);
+  }
+
+  cy.genericInterceptRequest('service', 'create', sel.serviceForm.save, `Gateway Service "${service.name}" successfully created!`);
 })
 
-// this is to access routes, plugins or documents from services
-Cypress.Commands.add('access_services_resources', (service, which_resource, visit_service = true) => {
-  if(visit_service){
-    cy.get(`[data-testid="${service.name}"]`).click()
+Cypress.Commands.add('uiEditService', (service_name, options = {}) => {
+  cy.get(sel.services.selectServiceRow(service_name)).find(sel.services.actionsButton).click();
+  cy.get(sel.routes.editButton).click();
+
+  if(options.name != null){
+    cy.clearAndType(sel.serviceForm.name, options.name)
   }
-  cy.get('[data-testid="vtab-container"]').should('exist')
-  cy.get(`[data-testid="service-${which_resource}"]`).click()
+
+  if(options.path != null){
+    cy.clearAndType(sel.serviceForm.path, options.path)
+  }
+
+  if (options.url != null) {
+    cy.clearAndType(sel.serviceForm.url, options.url);
+  }
+
+  // if (options.protocol != null) {
+  //   setProtocol(sel.serviceForm.protocol, options.protocol);
+  // }
+
+  if (options.host != null) {
+    cy.clearAndType(sel.serviceForm.host, options.host);
+  }
+
+  // if (options.port != null) {
+  //   clearAndType(sel.serviceForm.port, options.port);
+  // }
+
+  cy.genericInterceptRequest('service', 'update' , sel.serviceForm.editSave,`Gateway Service "${service_name}" successfully updated!`);
 })

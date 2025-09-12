@@ -1,0 +1,96 @@
+{
+	"workspace": "default",
+	"route_error": "no Route matched with those values",
+	"service": {
+		"name": "service-host",
+		"mode": "manual",
+		"protocol": "https",
+		"host": "jsonplaceholder.typicode.com",
+		"port": 443,
+		"path": "/",
+		"routes": [
+			{
+				"name": "route-with-host",
+				"path": "/v1",
+				"resource": "/v1/todos/1",
+				"host": "api.local",
+				"strip_path": true,
+				"tests": [
+					{
+						"host_option": "api.local",
+						"options": {
+							"method": "GET",
+							"limit": 5,
+							"headers": {
+								"Host": "api.local"
+							}
+						},
+						"response": {
+							"status_code": 200,
+							"headers": ["X-Kong-Request-Id", "X-Kong-Upstream-Latency", "X-Kong-Proxy-Latency"]
+						}
+
+					},
+					{
+						"host_option": "no host sent",
+						"options": {
+							"method": "GET",
+							"limit": 5,
+							"headers": {
+							}
+						},
+						"response": {
+							"status_code": 404,
+							"message": "no Route matched with those values"
+						}
+
+					},
+					{
+						"host_option": "no-allowed.local",
+						"options": {
+							"method": "GET",
+							"limit": 5,
+							"headers": {
+								"Host": "no-allowed.local"
+							}
+						},
+						"response": {
+							"status_code": 404,
+							"message": "no Route matched with those values"
+						}
+
+					}
+				]
+			},
+			{
+				"name": "route-without-host",
+				"path": "/open",
+				"resource": "/open/todos/1",
+				"strip_path": true,
+				"limit": 2,
+				"tests": [
+					{
+						"host_option": "no host sent",
+						"options": {
+							"method": "GET",
+							"limit": 5,
+							"headers": {
+							}
+						},
+						"response": {
+							"status_code": 200,
+							"headers": ["X-Kong-Request-Id", "X-Kong-Upstream-Latency", "X-Kong-Proxy-Latency"]
+						}
+
+					}
+				]
+			}
+	    ],
+	    "plugin":{
+			"name": "key-auth",
+			"type": "key-auth-card",
+			"route": "r-echo",
+			"scoped": true
+		}
+    }	
+}
