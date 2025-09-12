@@ -21,6 +21,7 @@
 							"Host": "api.local"
 						},
 						"failOnStatusCode": false,
+						"expected_code": 401,
 						"allowed_status_codes": [200, 401, 404]
 					},
 					"response": {

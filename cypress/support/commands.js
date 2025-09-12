@@ -269,7 +269,7 @@ Cypress.Commands.add("apiGetRouteIfExists", (name) => {
 });
 
 Cypress.Commands.add("apiGetPluginIfExists", (name) => {
-  adminGet(`/plugins/${name}`).its("status").should("eq", 200);
+  adminGet(`/schemas/plugins/${name}`).its("status").should("eq", 200);
 });
 
 Cypress.Commands.add("apiGetConsumerIfExists", (name) => {
@@ -277,7 +277,7 @@ Cypress.Commands.add("apiGetConsumerIfExists", (name) => {
 });
 
 Cypress.Commands.add("proxyRequest", (path, options = {}) => {
-  const url = `${Cypress.env("konnect_proxy_url")}${path}`;
+  const url = `${Cypress.env("kong_proxy_url")}${path}`;
   let limit = options?.limit? options.limit : 10;
   let delay = 1000;
   let expected_code = options?.expected_code? options.expected_code : 200;
